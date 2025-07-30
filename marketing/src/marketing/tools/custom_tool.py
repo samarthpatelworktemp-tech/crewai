@@ -1,5 +1,5 @@
 from crewai.tools import BaseTool
-from typing import Type, Literal
+from typing import Type
 from pydantic import BaseModel, Field
 from pptx import Presentation 
 
@@ -22,7 +22,7 @@ class MyCustomTool(BaseTool):
 
 
 class PresentationToolInput(BaseModel):
-    argument: str = Field(..., description="Format: 'topic|summary|tasks'")
+    argument: str = Field(..., description="Input for the presentation tool.")
 
 
 class PresentationTool(BaseTool):
@@ -35,18 +35,18 @@ class PresentationTool(BaseTool):
     def _run(self, argument: str) -> str:
         """
         Create a presentation based on the provided argument.
-        Format: 'topic|summary|tasks'
+        Format: 'topic|summary|target_audience|marketing_campaigns|campaign_1|campaign_2|campaign_3|campaign_4|campaign_5|Budget_allocation|KPIs|Conclusion'
         """
         try:
-            topic, summary, tasks = argument.split("|")
+            topic, summary, target_audience, marketing_campaigns, campaign_1,campaign_2, campaign_3,campaign_4,campaign_5,Budget_allocation,KPIs,Conclusion= argument.split("|")
         except ValueError:
-            return "❌ Invalid argument format. Expected format: 'topic|summary|tasks'"
+            return "❌ Invalid argument format. Expected format: 'topic|summary|target_audience|marketing_campaigns|campaign_1|campaign_2|campaign_3|campaign_4|campaign_5|Budget_allocation|KPIs|Conclusion'"
 
-        return self._generate_ppt(topic.strip(), summary.strip(), tasks.strip())
+        return self._generate_ppt(topic.strip(), summary.strip(), target_audience.strip(),marketing_campaigns.strip(), campaign_1.strip(), campaign_2.strip(), campaign_3.strip(), campaign_4.strip(), campaign_5.strip(), Budget_allocation.strip(), KPIs.strip(), Conclusion.strip())
 
-    def _generate_ppt(self, topic: str, summary: str, tasks: str) -> str:
+    def _generate_ppt(self, topic: str, summary: str, target_audience: str,marketing_campaigns:str, campaign_1:str,campaign_2:str,campaign_3:str,campaign_4:str,campaign_5:str,Budget_allocation:str,KPIs:str,Conclusion:str) -> str:
+
         ppt = Presentation()
-
         # Title Slide
         title_slide_layout = ppt.slide_layouts[0]
         slide = ppt.slides.add_slide(title_slide_layout)
@@ -54,7 +54,16 @@ class PresentationTool(BaseTool):
 
         self._add_slide(ppt, "Summary", summary)
 
-        self._add_slide(ppt, "Task Plan", tasks)
+        self._add_slide(ppt, "Tareget_audience", target_audience)
+        self._add_slide(ppt, "Marketing Campaigns", marketing_campaigns)
+        self._add_slide(ppt, "Campaign 1", campaign_1)
+        self._add_slide(ppt, "Campaign 2", campaign_2)
+        self._add_slide(ppt, "Campaign 3", campaign_3)
+        self._add_slide(ppt, "Campaign 4", campaign_4)
+        self._add_slide(ppt, "Campaign 5", campaign_5)
+        self._add_slide(ppt, "Budget Allocation", Budget_allocation)
+        self._add_slide(ppt, "KPIs", KPIs)
+        self._add_slide(ppt, "Conclusion", Conclusion)
 
         file_path = f"{topic}_report.pptx"
         ppt.save(file_path)

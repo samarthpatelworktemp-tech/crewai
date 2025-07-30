@@ -3,7 +3,7 @@ research_task:
     Conduct a thorough research about the customer and competitors in the context
     of {customer_domain}.
     Make sure you find any interesting and relevant information given the
-    current year is 2024.
+    current year is 2025.
     We are working with them on the following project: {project_description}.
   expected_output: >
     A complete report on the customer and their customers and competitors,
@@ -43,13 +43,25 @@ copy_creation_task:
 
 presentation_creation_task:
   description: >
-    Create a presentation that showcases the marketing strategy and campaign ideas
-    in a visually appealing and persuasive manner.
-    Ensure the presentation is suitable for stakeholders and highlights key points effectively.
-    and save the output in pptx format
+    Create a presentation in PPTX format by summarizing and formatting the inputs as:
+    "topic|summary|target_audience|marketing_campaigns|campaign_1|campaign_2|campaign_3|campaign_4|campaign_5|Budget_allocation|KPIs|Conclusion".
+    
+    Use:
+    - The topic from project title.
+    - The summary from the project overview.
+    - The target audience from project_understanding_task.
+    - Marketing strategy from marketing_strategy_task.
+    - The 5 campaign ideas from campaign_idea_task.
+    - KPIs from marketing_strategy_task.
+    - Generate a conclusion based on key insights.
+
+    Ensure all the values are properly formatted and concatenated using "|" as separator and pass the full string to the tool.
   expected_output: >
-    A well-structured presentation that includes the marketing strategy, campaign ideas,
-    and supporting visuals.   
-    and save the ppt using the tools provided.
-  output_format: >
-    "pptx"
+    A presentation string input ready to be passed to the tool, using the pipe format. Then the tool will save the output as a PPTX file.
+
+save_presentation_task:
+  description: >
+    Save the presentation created in the previous task using the tools provided.
+    Ensure the file is saved in a specified format and location.
+  expected_output: >
+    Confirmation message indicating the presentation has been saved successfully.

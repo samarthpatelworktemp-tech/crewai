@@ -108,6 +108,15 @@ class MarketingPostsCrew():
             context=[self.marketing_strategy_task(), self.campaign_idea_task(), self.copy_creation_task()],
             output_format='pptx'
         )
+    @task
+    def save_presentation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['save_presentation_task'],
+            agent=self.chief_creative_director(),
+            tools=[PresentationTool()],
+            context=[self.presentation_creation_task()],
+            
+        )
     @crew
     def crew(self) -> Crew:
         return Crew(
