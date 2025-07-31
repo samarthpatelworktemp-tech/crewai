@@ -1,7 +1,7 @@
 from typing import List
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-
+from marketing.tools.chart_genration_tool import ChartTool
 from marketing.tools.custom_tool import PresentationTool
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from pydantic import BaseModel, Field  
@@ -22,7 +22,6 @@ class CampaignIdea(BaseModel):
 class Copy(BaseModel):
     title: str = Field(..., description="Title of the copy")
     body: str = Field(..., description="Body of the copy")
-
 
 @CrewBase
 class MarketingPostsCrew():
@@ -63,12 +62,21 @@ class MarketingPostsCrew():
             memory=False,
         )
     
+    @agent
+    def data_visualization_expert(self) -> Agent:
+        return Agent(
+            config=self.agents_config['data_visualization_expert'],
+            verbose=True,
+            memory=False,
+        )
+    
     @task
     def research_task(self) -> Task:
         return Task(
             config=self.tasks_config['research_task'],
             agent=self.lead_market_analyst()
         )
+
 
     @task
     def project_understanding_task(self) -> Task:
@@ -96,18 +104,38 @@ class MarketingPostsCrew():
         return Task(
             config=self.tasks_config['copy_creation_task'],
             agent=self.creative_content_creator(),
-            context=[self.marketing_strategy_task(), self.campaign_idea_task()]
+            context=[self.marketing_strategy_task(), self.campaign_idea_task()],
         )
 
+    @task 
+    def charts_data_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['charts_data_task'],
+            agent=self.data_visualization_expert(),
+            tools=[SerperDevTool(), ScrapeWebsiteTool()],
+            context=[self.marketing_strategy_task(), self.campaign_idea_task(), self.copy_creation_task()],
+        )
+
+
+    @task
+    def charts_generation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['charts_generation_task'],
+            agent=self.data_visualization_expert(),
+            tools=[ChartTool()],
+            context=[self.charts_data_task()],
+            output_format='png'  
+        )
+    
     @task
     def presentation_creation_task(self) -> Task:
         return Task(
             config=self.tasks_config['presentation_creation_task'],
             agent=self.chief_creative_director(),
-            tools=[PresentationTool()],
-            context=[self.marketing_strategy_task(), self.campaign_idea_task(), self.copy_creation_task()],
+            context=[self.marketing_strategy_task(), self.campaign_idea_task(), self.copy_creation_task(),self.charts_data_task()],
             output_format='pptx'
         )
+    
     @task
     def save_presentation_task(self) -> Task:
         return Task(
@@ -115,8 +143,8 @@ class MarketingPostsCrew():
             agent=self.chief_creative_director(),
             tools=[PresentationTool()],
             context=[self.presentation_creation_task()],
-            
         )
+   
     @crew
     def crew(self) -> Crew:
         return Crew(

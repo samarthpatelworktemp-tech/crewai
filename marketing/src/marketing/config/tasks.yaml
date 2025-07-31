@@ -31,8 +31,10 @@ campaign_idea_task:
   description: >
     Develop creative marketing campaign ideas for {project_description}.
     Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy.
+    create campaign ideas, and provide a brief description of each idea.
   expected_output: >
-    A list of 5 campaign ideas, each with a brief description and expected impact.
+    A list of campaign ideas, each with a brief description and expected impact.
+    And campaigns must be aligned with the marketing strategy and target audience and if there are 3 campaigns idea, they must be mentioned under campaign 1, campaign 2, campaign 3.
 
 copy_creation_task:
   description: >
@@ -40,24 +42,29 @@ copy_creation_task:
     Ensure the copies are compelling, clear, and tailored to the target audience.
   expected_output: >
     Marketing copies for each campaign idea.
+    And if there are 3 campaigns idea, they must be mentioned under campaign 1, campaign 2, campaign 3.
 
 presentation_creation_task:
   description: >
     Create a presentation in PPTX format by summarizing and formatting the inputs as:
-    "topic|summary|target_audience|marketing_campaigns|campaign_1|campaign_2|campaign_3|campaign_4|campaign_5|Budget_allocation|KPIs|Conclusion".
+    "topic|summary|target_audience|marketing_campaigns|campaigns|Budget_allocation|KPIs|Conclusion".
     
     Use:
     - The topic from project title.
     - The summary from the project overview.
     - The target audience from project_understanding_task.
     - Marketing strategy from marketing_strategy_task.
-    - The 5 campaign ideas from campaign_idea_task.
+    - The campaigns ideas from campaign_idea_task.
     - KPIs from marketing_strategy_task.
     - Generate a conclusion based on key insights.
 
     Ensure all the values are properly formatted and concatenated using "|" as separator and pass the full string to the tool.
+    and ensure the presentation is visually appealing and includes all necessary information.
+    And make sure to check the charts related infomation in the charts_data_task and charts_generation_task (like Budget_allocation) and then add the data to the presentation.
   expected_output: >
-    A presentation string input ready to be passed to the tool, using the pipe format. Then the tool will save the output as a PPTX file.
+    A presentation string input ready to be passed to the tool, using the pipe format. 
+    data must be correct and well-structured and data related to charts must be verfied with the charts_data_task.
+    Then the tool will save the output as a PPTX file.
 
 save_presentation_task:
   description: >
@@ -65,3 +72,41 @@ save_presentation_task:
     Ensure the file is saved in a specified format and location.
   expected_output: >
     Confirmation message indicating the presentation has been saved successfully.
+
+
+charts_data_task:
+  description: >
+    Gather the data required for generating charts and graphs. Ensure that for every chart data block:
+    - A descriptive title is provided.
+    - Data is clearly structured.
+    - **A valid data source is always included.** If the data is internally projected, explicitly mention so.
+    
+    **Do not return any chart data without a data source.** 
+    
+    Example format for each chart data block:
+    
+    chart_type: Pie Chart
+    title: Budget Allocation by Channel (2025)
+    data:
+      - Social Media Ads: 42
+      - Search Ads: 28
+      - Email: 15
+    source: https://www.statista.com/statistics/269019/advertising-spending-worldwide-by-medium/
+
+    *IMPORTANT*: At the end of the output, each chart data must contain a field `source` with a **valid link** or credible reference (not empty).
+  expected_output: >
+    A structured list of chart data blocks. Each block must contain:
+    - chart_type
+    - title
+    - data
+    - source (with a real, valid URL or document reference)
+    
+
+charts_generation_task:
+  description: >
+    Generate visually appealing and informative charts and graphs that effectively
+    communicate the marketing strategies and campaign ideas.
+    Use the data from the marketing strategy task and campaign idea task.
+  expected_output: >
+    A set of charts and graphs that visually represent the marketing strategies
+    and campaign ideas, ready for inclusion in the presentation.
